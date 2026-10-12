@@ -22,11 +22,13 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Android NDK and CMake
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
+      - name: Accept Android SDK licenses and install packages
+        run: |
+          set -e
+          echo "Accepting Android SDK licenses..."
+          yes | sdkmanager --licenses
+          echo "Installing Android SDK, NDK and CMake..."
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
 
       - name: Fetch pinned llama.cpp source
         run: |
