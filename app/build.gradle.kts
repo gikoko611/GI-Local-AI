@@ -1,10 +1,12 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 android {
     namespace = "com.gi.localai"
     compileSdk = 35
+    buildFeatures { compose = true }
     defaultConfig {
         applicationId = "com.gi.localai"
         minSdk = 26
