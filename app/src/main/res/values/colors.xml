@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="gi_gold">#D6B46A</color>
-    <color name="gi_gold_light">#F3D99A</color>
-    <color name="gi_gold_dark">#8C6A32</color>
-    <color name="gi_bg">#100D0A</color>
-    <color name="gi_surface">#1C1711</color>
-    <color name="gi_surface_alt">#292117</color>
-    <color name="gi_ink">#F5EBDD</color>
-    <color name="gi_muted">#A99B86</color>
+    <color name="gi_gold">#39FF14</color>
+    <color name="gi_gold_light">#B6FF9B</color>
+    <color name="gi_gold_dark">#16A34A</color>
+    <color name="gi_bg">#050A07</color>
+    <color name="gi_surface">#0B1710</color>
+    <color name="gi_surface_alt">#102719</color>
+    <color name="gi_ink">#E8FFE9</color>
+    <color name="gi_muted">#83A88C</color>
 </resources>
