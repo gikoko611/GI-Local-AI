@@ -52,7 +52,8 @@ Java_com_gi_localai_InferenceBridge_nativeGenerate(JNIEnv *env, jobject, jstring
         return env->NewStringUTF("ERROR: tokenization failed");
     }
     env->ReleaseStringUTFChars(jprompt, prompt);
-    llama_memory_clear(llama_get_memory(g_ctx), true);
+    // llama.cpp b4514 exposes the KV cache reset through this context API.
+    llama_kv_cache_clear(g_ctx);
     llama_batch batch = llama_batch_get_one(tokens.data(), (int)tokens.size());
     if (llama_decode(g_ctx, batch) != 0) return env->NewStringUTF("ERROR: prompt decode failed");
     llama_sampler *sampler = llama_sampler_chain_init(llama_sampler_chain_default_params());
