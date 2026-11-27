@@ -24,10 +24,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-private val Bg = Color(0xFF100D0A)
-private val Panel = Color(0xFF1C1711)
-private val Neon = Color(0xFFD6B46A)
-private val Ink = Color(0xFFF5EBDD)
+private val Bg = Color(0xFF050A07)
+private val Panel = Color(0xFF0B1710)
+private val Neon = Color(0xFF39FF14)
+private val Ink = Color(0xFFE8FFE9)
 
 class MainActivity : ComponentActivity() {
     private lateinit var store: ChatStore
@@ -65,7 +65,7 @@ private fun GIApp(store: ChatStore) {
     MaterialTheme(colorScheme = darkColorScheme(primary = Neon, background = Bg, surface = Panel)) {
         Column(Modifier.fillMaxSize().background(Bg).padding(14.dp)) {
             Text("G.I // CORE AI", color = Neon, fontSize = 24.sp)
-            Text("PRIVATE OFFLINE AI • GGUF ENGINE", color = Color.Gray, fontSize = 11.sp)
+            Text("CYBER NEON // OFFLINE GGUF CORE", color = Color.Gray, fontSize = 11.sp)
             Spacer(Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 listOf("CHAT","MODELS","HISTORY","PROMPTS","METRICS").forEach { name ->
