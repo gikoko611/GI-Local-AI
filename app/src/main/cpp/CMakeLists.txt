@@ -13,6 +13,9 @@ set(LLAMA_BUILD_SERVER OFF CACHE BOOL "" FORCE)
 set(GGML_NATIVE OFF CACHE BOOL "" FORCE)
 set(GGML_OPENMP OFF CACHE BOOL "" FORCE)
 set(GGML_VULKAN OFF CACHE BOOL "" FORCE)
+# llamafile's ARM FP16 intrinsics are not available on the Redmi 9A's
+# 32-bit armeabi-v7a target; keep the portable GGML CPU kernels instead.
+set(GGML_LLAMAFILE OFF CACHE BOOL "" FORCE)
 add_subdirectory(llama.cpp EXCLUDE_FROM_ALL)
 add_library(gi-local-ai SHARED native-lib.cpp)
 find_library(log-lib log)

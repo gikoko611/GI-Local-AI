@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="gi_gold">#39FF14</color>
+    <color name="gi_gold_light">#B6FF9B</color>
+    <color name="gi_gold_dark">#16A34A</color>
+    <color name="gi_bg">#050A07</color>
+    <color name="gi_surface">#0B1710</color>
+    <color name="gi_surface_alt">#102719</color>
+    <color name="gi_ink">#E8FFE9</color>
+    <color name="gi_muted">#83A88C</color>
+</resources>

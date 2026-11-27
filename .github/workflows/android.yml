@@ -1,7 +1,7 @@
 name: Android APK
 on:
   push:
-    branches: [main]
+    branches: [main, "feat/gicore-offline-ai-v2"]
   pull_request:
   workflow_dispatch:
 
@@ -10,8 +10,8 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
     steps:
       - name: Checkout project
         uses: actions/checkout@v4
@@ -22,16 +22,24 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Set up Android SDK
+      - name: Set up Android SDK tools
         uses: android-actions/setup-android@v3
+        with:
+          accept-android-sdk-licenses: true
+          packages: ''
 
-      - name: Accept Android SDK licenses and install packages
+      - name: Install Android SDK packages
         run: |
-          set -e
-          echo "Accepting Android SDK licenses..."
-          yes | sdkmanager --licenses
-          echo "Installing Android SDK, NDK and CMake..."
-          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
+          set -eux
+          sdkmanager --install "platform-tools" "platforms;android-35" "build-tools;35.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
+
+      - name: Verify Android SDK
+        run: |
+          set -eux
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          command -v sdkmanager
+          sdkmanager --version
+          test -x "$ANDROID_HOME/build-tools/35.0.0/aapt"
 
       - name: Fetch pinned llama.cpp source
         run: |
@@ -47,10 +55,22 @@ jobs:
       - name: Build debug APK (ARMv7)
         run: gradle --no-daemon --stacktrace assembleDebug
 
+      - name: Verify APK ABI and package
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | head -n 5
+          echo "===== APK native libraries ====="
+          unzip -Z1 "$APK" | grep -E '^lib/armeabi-v7a/[^/]+\.so$'
+          echo "===== APK size ====="
+          du -h "$APK"
+
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: GI-Local-AI-armv7-debug
+          name: GI-Core-AI-v2-armv7-debug
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14

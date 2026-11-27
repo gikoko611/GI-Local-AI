@@ -1,16 +1,18 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 android {
     namespace = "com.gi.localai"
     compileSdk = 35
+    buildFeatures { compose = true }
     defaultConfig {
         applicationId = "com.gi.localai"
         minSdk = 26
         targetSdk = 28
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "2.0.0"
         ndk { abiFilters += listOf("armeabi-v7a") }
         externalNativeBuild {
             cmake { cppFlags += listOf("-std=c++17", "-O3") }
