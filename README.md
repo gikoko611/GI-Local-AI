@@ -1,52 +1,75 @@
-# G.I Local AI (ARMv7 MVP)
+# G.I Local AI — Private GGUF Assistant
 
-Cyber-terminal Android UI for local GGUF inference. Model files are imported from device storage; they are not bundled into the APK.
+G.I Local AI is an on-device Android assistant built around llama.cpp and GGUF models. It is designed first for older 32-bit Android phones, including Redmi 9A / Android 10 / armeabi-v7a / 3 GB RAM.
 
-## Important build note
-The workflow fetches a pinned `llama.cpp` source revision and compiles its native library. This is a starter MVP, not a verified release build. Native C API changes between llama.cpp revisions can require small compatibility fixes. GitHub Actions logs are the source of truth for the first build.
+## Build identity
 
-## Build using GitHub Actions
-1. Create a GitHub repository named `GI-Local-AI`.
-2. From Termux, upload this project folder with git. The workflow installs Gradle 8.9, so a local wrapper is not required.
-3. Open the repository's **Actions** tab.
-4. Run **Android APK** (or push to `main`).
-5. Download artifact `GI-Local-AI-armv7-debug`.
-6. Install `app-debug.apk`.
+- App: **G.I Local AI**
+- Application ID: `com.gi.localai` (debug APK uses `com.gi.localai.debug`)
+- Version: `0.2.0`
+- Minimum Android: 8.0 / API 26 (Android 10 is supported by the declared minimum)
+- Native ABI: `armeabi-v7a` only
+- Engine: llama.cpp, pinned to `b4514`
+- Model files are imported by Android Storage Access Framework and copied into app-private storage; they are not bundled in the APK.
+- No account, analytics, telemetry, network permission, or cloud inference is included.
 
-## Termux setup
-```sh
-pkg update
-pkg install git unzip
-cd ~
-unzip GI-Local-AI.zip
-cd GI-Local-AI
-git init
-git add .
-git commit -m "feat: create G.I Local AI ARMv7 MVP"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/GI-Local-AI.git
-git push -u origin main
-```
+## Included feature set (30+)
 
-## Current MVP features
-- Cyber terminal Compose UI
-- GGUF file picker
-- Native model load/unload and greedy generation
-- Local SQLite chat history
-- System prompt presets
-- Java heap and output token controls
+1. On-device chat UI.
+2. GGUF model picker using Android Storage Access Framework.
+3. Persistable read permission for selected model URI.
+4. Model copy into app-private storage before native loading.
+5. Free-storage preflight before model copy.
+6. SHA-256 checksum after model copy.
+7. Native llama.cpp inference.
+8. ARMv7 / CPU-only model loading.
+9. Explicit model load status.
+10. Model unload control.
+11. Stop-generation control.
+12. Configurable context size (512–2048).
+13. Configurable CPU thread count (1–4).
+14. Output token limit (32–256).
+15. Top-K sampling (native default 40).
+16. Configurable Top-P sampling.
+17. Configurable temperature sampling.
+18. Local SQLite conversation history.
+19. Search within saved messages.
+20. Export conversation as Markdown.
+21. Copy individual messages.
+22. Selectable message text.
+23. Editable system prompt.
+24. Save prompt presets locally.
+25. Load saved prompt presets.
+26. Low-memory preset.
+27. Java heap metric.
+28. Native heap metric.
+29. App-private free-storage metric.
+30. Last generation duration metric.
+31. Premium dark chocolate / champagne-gold interface.
+32. Custom G.I adaptive launcher icon.
+33. No model bundled in APK, reducing install size.
+34. Local-only privacy status in the UI.
 
-## Limitations to address after first successful build
-- Confirm the device supports `armeabi-v7a`; Android shell architecture alone does not prove app ABI support.
-- The selected GGUF is copied to app-private storage before native loading; this requires free storage approximately equal to the model file size.
-- ARMv7 is CPU-only and may be slow; 0.5B quantized models are a more realistic starting point.
-- Native API compatibility may need adjustments against the pinned llama.cpp tag.
-- Token streaming, stop-generation cancellation, tokenizer-aware chat templates, model checksums, and native RSS / tokens-per-second metrics are planned improvements.
-- Use only GGUF files you are licensed and authorized to use.
+## Redmi 9A recommendations
 
-## Generate the Gradle wrapper before first push
-The archive contains a bootstrap placeholder because wrapper JARs are binary files. Install a compatible Gradle distribution in a Linux/Ubuntu environment, then run:
-```sh
-gradle wrapper --gradle-version 8.9
-```
-Commit `gradlew`, `gradlew.bat`, and `gradle/wrapper/gradle-wrapper.jar` + `gradle-wrapper.properties`. On Termux, wrapper generation may not be available; alternatively change the workflow to install Gradle and run `gradle assembleDebug`.
+Start with a small 0.3B–0.6B GGUF Q4 model. On a 3 GB device, select the low-memory preset (512 context, one thread, 96 output tokens). Larger models may fail to load or cause Android to kill the app. Performance and memory use depend on the exact model and other running apps.
+
+## Build with GitHub Actions (no PC required)
+
+1. Open the repository's **Actions** tab.
+2. Run **Android APK** using `workflow_dispatch`, or push/merge this branch.
+3. Wait for the ARMv7 build job to finish.
+4. Download artifact `GI-Local-AI-armv7-debug`.
+5. Extract and install `app-debug.apk` on the phone.
+
+The workflow installs JDK 17, Android SDK / NDK, CMake 3.22.1 and Gradle 8.9. It builds only `armeabi-v7a`.
+
+## Technical notes
+
+- llama.cpp source is fetched at the pinned tag `b4514` during CI.
+- JNI exposes model load, generation, stop and unload.
+- Native generation uses a bounded context, top-k, top-p, temperature and a sampling seed.
+- Token output is returned after generation completes; token-by-token streaming is not yet implemented.
+- The selected model is copied into the app's private files directory. Keep enough free storage for both the source model and copied model.
+- A successful GitHub Actions build verifies compilation, not runtime inference on every phone/model. Test with a small GGUF first.
+- This project does not bundle model weights. Only use model files you are licensed and authorized to use.
