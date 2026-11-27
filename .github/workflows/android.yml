@@ -11,7 +11,10 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
     steps:
       - name: Checkout project
         uses: actions/checkout@v4
@@ -22,13 +25,16 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Verify preinstalled Android command-line tools
+        run: |
+          set -eux
+          test -x "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" || command -v sdkmanager
+          sdkmanager --version
 
       - name: Accept Android SDK licenses and install packages
         run: |
           set -e
-          yes | sdkmanager --licenses
+          yes | sdkmanager --licenses >/dev/null || true
           sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
 
       - name: Fetch pinned llama.cpp source
@@ -44,6 +50,13 @@ jobs:
 
       - name: Build debug APK (ARMv7)
         run: gradle --no-daemon --stacktrace assembleDebug
+
+      - name: Verify APK ABI and package
+        run: |
+          APK="app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | head -n 5
+          unzip -l "$APK" | grep -E 'lib/armeabi-v7a/.*\.so'
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
